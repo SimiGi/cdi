@@ -17,18 +17,19 @@
 
 package com.vaadin.cdi.internal;
 
-import com.vaadin.cdi.AfterViewChange;
-import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextByNavigation;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextByName;
-import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import java.io.Serializable;
+import java.util.Objects;
 
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import java.io.Serializable;
-import java.util.Objects;
+
+import com.vaadin.cdi.AfterViewChange;
+import com.vaadin.cdi.NormalUIScoped;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByName;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNavigation;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
+import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 
 /**
  * Holder class for ViewContextStrategy implementations.

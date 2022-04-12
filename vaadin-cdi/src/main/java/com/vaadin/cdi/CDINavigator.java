@@ -17,6 +17,9 @@
 
 package com.vaadin.cdi;
 
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
+
 import com.vaadin.cdi.internal.ViewContextualStorageManager;
 import com.vaadin.navigator.NavigationStateManager;
 import com.vaadin.navigator.Navigator;
@@ -25,9 +28,6 @@ import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.SingleComponentContainer;
 import com.vaadin.ui.UI;
-
-import javax.enterprise.event.Event;
-import javax.inject.Inject;
 
 /**
  * Vaadin Navigator as a CDI Bean.

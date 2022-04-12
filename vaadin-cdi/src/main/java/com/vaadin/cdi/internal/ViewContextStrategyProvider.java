@@ -1,18 +1,19 @@
 package com.vaadin.cdi.internal;
 
-import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
-import com.vaadin.navigator.View;
-import org.apache.deltaspike.core.api.literal.AnyLiteral;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
-import java.lang.annotation.Annotation;
-import java.util.Set;
+
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
+import com.vaadin.navigator.View;
+import org.apache.deltaspike.core.api.literal.AnyLiteral;
 
 /**
  * Looks up ViewContextStrategy for view classes.
@@ -33,7 +34,8 @@ public class ViewContextStrategyProvider {
             throw new IllegalStateException(
                     "No ViewContextStrategy found for " + annotationClass.getCanonicalName());
         }
-        return BeanProvider.getContextualReference(ViewContextStrategy.class, strategyBean);
+        CreationalContext<?> creationalContext = beanManager.createCreationalContext(strategyBean);
+        return (ViewContextStrategy) beanManager.getReference(strategyBean, ViewContextStrategy.class, creationalContext);
     }
 
     private Class<? extends Annotation> findStrategyAnnotation(Class<? extends View> viewClass) {

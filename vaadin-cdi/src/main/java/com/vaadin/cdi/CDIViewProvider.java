@@ -16,13 +16,13 @@
 
 package com.vaadin.cdi;
 
-import com.vaadin.cdi.access.AccessControl;
-import com.vaadin.cdi.internal.AnnotationUtil;
-import com.vaadin.cdi.internal.Conventions;
-import com.vaadin.cdi.internal.ViewContextualStorageManager;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewProvider;
-import com.vaadin.ui.UI;
+import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
@@ -31,13 +31,14 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
-import java.lang.annotation.Annotation;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import com.vaadin.cdi.access.AccessControl;
+import com.vaadin.cdi.internal.AnnotationUtil;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.ViewContextualStorageManager;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewProvider;
+import com.vaadin.ui.UI;
 
 public class CDIViewProvider implements ViewProvider {
 

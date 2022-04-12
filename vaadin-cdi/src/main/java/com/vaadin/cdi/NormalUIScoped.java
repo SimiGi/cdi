@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import javax.enterprise.context.NormalScope;
+import javax.inject.Qualifier;
 
 /**
  * The lifecycle of a UIScoped component is bound to a browser tab.
@@ -42,6 +43,7 @@ import javax.enterprise.context.NormalScope;
  * reference the same underlying scope, so it is possible to get both a proxy
  * and a direct reference to the same object by using different annotations.
  */
+@Qualifier
 @NormalScope
 @Inherited
 @Target({ ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.FIELD,

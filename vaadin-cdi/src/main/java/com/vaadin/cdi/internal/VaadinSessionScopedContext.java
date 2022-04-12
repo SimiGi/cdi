@@ -17,15 +17,17 @@
 
 package com.vaadin.cdi.internal;
 
-import com.vaadin.cdi.VaadinSessionScoped;
-import com.vaadin.server.VaadinSession;
-import org.apache.deltaspike.core.util.ContextUtils;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
+import java.io.Serializable;
+import java.lang.annotation.Annotation;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
+import javax.enterprise.util.AnnotationLiteral;
+
+import com.vaadin.cdi.VaadinSessionScoped;
+import com.vaadin.server.VaadinSession;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 /**
  * Context for {@link VaadinSessionScoped}.
@@ -35,28 +37,14 @@ import java.lang.annotation.Annotation;
  *
  * @since 3.0
  */
-public class VaadinSessionScopedContext extends AbstractContext {
-    private final BeanManager beanManager;
+public class VaadinSessionScopedContext extends AbstractVaadinContext implements Serializable {
     private static final String ATTRIBUTE_NAME = VaadinSessionScopedContext.class.getName();
+    public VaadinSessionScopedContext() {
 
-    public VaadinSessionScopedContext(BeanManager beanManager) {
-        super(beanManager);
-        this.beanManager = beanManager;
     }
 
-    @Override
-    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
-        VaadinSession session = VaadinSession.getCurrent();
-        ContextualStorage storage = findContextualStorage(session);
-        if (storage == null && createIfNotExist) {
-            storage = new VaadinContextualStorage(beanManager);
-            session.setAttribute(ATTRIBUTE_NAME, storage);
-        }
-        return storage;
-    }
-
-    private static ContextualStorage findContextualStorage(VaadinSession session) {
-        return (ContextualStorage) session.getAttribute(ATTRIBUTE_NAME);
+    protected static String getAttributeName() {
+        return ATTRIBUTE_NAME;
     }
 
     @Override
@@ -69,27 +57,37 @@ public class VaadinSessionScopedContext extends AbstractContext {
         return VaadinSession.getCurrent() != null;
     }
 
-    public static void destroy(VaadinSession session) {
+    @Override
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+        VaadinSession session = VaadinSession.getCurrent();
         ContextualStorage storage = findContextualStorage(session);
+        if (storage == null && createIfNotExist) {
+            storage = new VaadinContextualStorage(getBeanManager());
+            session.setAttribute(getAttributeName(), storage);
+        }
+        return storage;
+    }
+
+    @Override
+    protected Annotation[] getAnnotations() {
+        Annotation[] annotations = {new AnnotationLiteral<VaadinSessionScoped>() {}};
+        return annotations;
+    }
+
+    @Override
+    protected Class<?> getBeanType() {
+        throw new NotImplementedException("getBeanType has not been implemented for VaadinSessionScopedContext");
+    }
+
+    private ContextualStorage findContextualStorage(VaadinSession session) {
+        return (ContextualStorage) session.getAttribute(getAttributeName());
+    }
+
+    @Override
+    public void destroy() {
+        ContextualStorage storage = findContextualStorage(VaadinSession.getCurrent());
         if (storage != null) {
             AbstractContext.destroyAllActive(storage);
         }
     }
-
-    /**
-     * Guess whether this context is undeployed.
-     *
-     * Tomcat expires sessions after contexts are undeployed.
-     * Need this guess to prevent exceptions when try to
-     * properly destroy contexts on session expiration.
-     *
-     * @return true when context is not active, but sure it should
-     */
-    public static boolean guessContextIsUndeployed() {
-        // Given there is a current VaadinSession, we should have an active context,
-        // except we get here after the application is undeployed.
-        return (VaadinSession.getCurrent() != null
-                && !ContextUtils.isContextActive(VaadinSessionScoped.class));
-    }
-
 }
