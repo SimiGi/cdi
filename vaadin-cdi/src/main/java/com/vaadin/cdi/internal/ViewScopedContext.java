@@ -38,10 +38,6 @@ public class ViewScopedContext extends AbstractVaadinContext{
 
     }
 
-    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
-        return getViewContextualStorageManager().getContextualStorage(createIfNotExist);
-    }
-
     public ViewContextualStorageManager getViewContextualStorageManager() {
         if(contextualStorageManager == null) {
             Set<Bean<?>> beans = getBeans();
@@ -53,17 +49,13 @@ public class ViewScopedContext extends AbstractVaadinContext{
         return contextualStorageManager;
     }
 
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return ViewScoped.class;
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+        return getViewContextualStorageManager().getContextualStorage(createIfNotExist);
     }
 
     @Override
-    public void destroy() {
-        ContextualStorage storage = getViewContextualStorageManager().getContextualStorage(false);
-        if (storage != null) {
-            AbstractContext.destroyAllActive(storage);
-        }
+    public Class<? extends Annotation> getScope() {
+        return ViewScoped.class;
     }
 
     @Override
@@ -76,5 +68,13 @@ public class ViewScopedContext extends AbstractVaadinContext{
     @Override
     protected Class<?> getBeanType() {
         return ViewContextualStorageManager.class;
+    }
+
+    @Override
+    public void destroy() {
+        ContextualStorage storage = getViewContextualStorageManager().getContextualStorage(false);
+        if (storage != null) {
+            AbstractContext.destroyAllActive(storage);
+        }
     }
 }

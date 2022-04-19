@@ -37,10 +37,6 @@ public class UIScopedContext extends AbstractVaadinContext {
     public UIScopedContext() {
     }
 
-    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
-        return getUIContextualStorageManager().getContextualStorage(createIfNotExist);
-    }
-
     public UIContextualStorageManager getUIContextualStorageManager() {
         if(contextualStorageManager == null) {
 
@@ -51,6 +47,10 @@ public class UIScopedContext extends AbstractVaadinContext {
         contextualStorageManager = (UIContextualStorageManager) getBeanManager().getReference(bean, UIContextualStorageManager.class, creationalContext);
         }
         return contextualStorageManager;
+    }
+
+    protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
+        return getUIContextualStorageManager().getContextualStorage(createIfNotExist);
     }
 
     @Override
