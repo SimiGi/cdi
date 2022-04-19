@@ -21,9 +21,7 @@ import java.util.Set;
 import javax.enterprise.context.spi.Contextual;
 import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
-import javax.enterprise.util.AnnotationLiteral;
 
-import com.vaadin.cdi.NormalViewScoped;
 import com.vaadin.cdi.ViewScoped;
 import com.vaadin.ui.UI;
 import org.apache.deltaspike.core.util.context.AbstractContext;
@@ -57,7 +55,7 @@ public class ViewScopedContext extends AbstractVaadinContext{
 
     @Override
     public Class<? extends Annotation> getScope() {
-        return NormalViewScoped.class;
+        return ViewScoped.class;
     }
 
     @Override
@@ -73,12 +71,6 @@ public class ViewScopedContext extends AbstractVaadinContext{
         return UI.getCurrent() != null
                 && getViewContextualStorageManager() != null
                 && getViewContextualStorageManager().isActive();
-    }
-
-    @Override
-    protected Annotation[] getAnnotations() {
-        Annotation[] annotations = {new AnnotationLiteral<ViewScoped>() {}, new AnnotationLiteral<NormalViewScoped>() {}};
-        return annotations;
     }
 
     @Override

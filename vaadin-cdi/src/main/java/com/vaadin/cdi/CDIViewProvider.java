@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 
 import javax.annotation.security.DenyAll;
 import javax.annotation.security.RolesAllowed;
+import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Any;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
@@ -40,6 +41,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewProvider;
 import com.vaadin.ui.UI;
 
+@Dependent
 public class CDIViewProvider implements ViewProvider {
 
     private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {

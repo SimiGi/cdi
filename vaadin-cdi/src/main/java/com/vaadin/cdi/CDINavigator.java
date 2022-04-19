@@ -38,7 +38,7 @@ import com.vaadin.ui.UI;
  * This class is responsible for controlling {@link com.vaadin.cdi.ViewScoped} context,
  * so initialization is mandatory for view scope.
  */
-@NormalUIScoped
+@UIScoped
 public class CDINavigator extends Navigator {
 
     @Inject

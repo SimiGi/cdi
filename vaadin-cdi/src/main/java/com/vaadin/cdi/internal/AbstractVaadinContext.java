@@ -1,6 +1,5 @@
 package com.vaadin.cdi.internal;
 
-import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -108,7 +107,7 @@ public abstract class AbstractVaadinContext implements InjectableContext {
 
     @Override
     public void destroy(Contextual<?> contextual) {
-
+        getBeanManager().createCreationalContext(contextual).release();
     }
 
     protected BeanManager getBeanManager() {
@@ -117,12 +116,10 @@ public abstract class AbstractVaadinContext implements InjectableContext {
 
     protected abstract ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist);
 
-    protected abstract Annotation[] getAnnotations();
-
     protected abstract Class<?> getBeanType();
 
     protected Set<Bean<?>> getBeans() {
-        return getBeanManager().getBeans(getBeanType(), getAnnotations());
+        return getBeanManager().getBeans(getBeanType());
     }
 
 }

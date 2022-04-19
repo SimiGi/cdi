@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.lang.annotation.Annotation;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.util.AnnotationLiteral;
 
 import com.vaadin.cdi.VaadinSessionScoped;
 import com.vaadin.server.VaadinSession;
@@ -66,12 +65,6 @@ public class VaadinSessionScopedContext extends AbstractVaadinContext implements
             session.setAttribute(getAttributeName(), storage);
         }
         return storage;
-    }
-
-    @Override
-    protected Annotation[] getAnnotations() {
-        Annotation[] annotations = {new AnnotationLiteral<VaadinSessionScoped>() {}};
-        return annotations;
     }
 
     @Override

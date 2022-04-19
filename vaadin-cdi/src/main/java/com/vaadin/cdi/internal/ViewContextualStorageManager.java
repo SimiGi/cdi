@@ -25,7 +25,7 @@ import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 
-import com.vaadin.cdi.NormalUIScoped;
+import com.vaadin.cdi.UIScoped;
 import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
@@ -42,7 +42,7 @@ import org.apache.deltaspike.core.util.context.ContextualStorage;
  * Concurrency handling ignored intentionally.
  * Locking of VaadinSession is the responsibility of Vaadin Framework.
  */
-@NormalUIScoped
+@UIScoped
 public class ViewContextualStorageManager implements Serializable {
     private final static Storage CLOSED = new ClosedStorage();
     private Storage openingContext = CLOSED;
