@@ -17,7 +17,6 @@
 package com.vaadin.cdi;
 
 import java.lang.annotation.Annotation;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.logging.Level;
@@ -94,7 +93,6 @@ public class CDIUIProvider extends DefaultUIProvider {
         Class<? extends UI> type = uiCreateEvent.getUIClass();
         int uiId = uiCreateEvent.getUiId();
         VaadinRequest request = uiCreateEvent.getRequest();
-        getLogger().info(Arrays.toString(type.getAnnotations()));
         Bean<?> bean = scanForBeans(type, request);
         try {
             // Make the UI id available to UIScopedContext when creating nested
