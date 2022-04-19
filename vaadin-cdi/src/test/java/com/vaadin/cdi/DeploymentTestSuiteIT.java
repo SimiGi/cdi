@@ -14,7 +14,7 @@ import org.junit.runners.Suite;
         InjectionTest.class, ConsistentInjectionTest.class,
         QualifiedInjectionTest.class, MultipleSessionTest.class,
         ScopedProducerTest.class, CrossInjectionTest.class, ShiroTest.class,
-        InappropriateDeploymentTest.class, NonPassivatingBeanTest.class,
+        InappropriateDeploymentTest.class,
         UIDestroyTest.class})
 public class DeploymentTestSuiteIT {
 
