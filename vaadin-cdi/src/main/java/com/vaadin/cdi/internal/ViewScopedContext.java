@@ -49,6 +49,7 @@ public class ViewScopedContext extends AbstractVaadinContext{
         return contextualStorageManager;
     }
 
+    @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
         return getViewContextualStorageManager().getContextualStorage(createIfNotExist);
     }
