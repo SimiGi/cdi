@@ -20,9 +20,12 @@ import io.quarkus.test.QuarkusUnitTest;
 import org.apache.deltaspike.core.api.literal.AnyLiteral;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class QuarkusVaadinExtensionTest {
 
@@ -48,13 +51,13 @@ public class QuarkusVaadinExtensionTest {
             contexts.add(context);
         }
 
-        Assertions.assertEquals(7, availableScopes.size());
-        Assertions.assertTrue(availableScopes.stream().anyMatch(scope -> scope == UIScoped.class));
-        Assertions.assertTrue(availableScopes.stream().anyMatch(scope -> scope == ViewScoped.class));
+        assertEquals(7, availableScopes.size());
+        assertTrue(availableScopes.stream().anyMatch(scope -> scope == UIScoped.class));
+        assertTrue(availableScopes.stream().anyMatch(scope -> scope == ViewScoped.class));
 
-        Assertions.assertEquals(7, contexts.size());
-        Assertions.assertTrue(contexts.stream().anyMatch(context -> context instanceof UIScopedContext));
-        Assertions.assertTrue(contexts.stream().anyMatch(context -> context instanceof ViewScopedContext));
+        assertEquals(7, contexts.size());
+        assertTrue(contexts.stream().anyMatch(context -> context instanceof UIScopedContext));
+        assertTrue(contexts.stream().anyMatch(context -> context instanceof ViewScopedContext));
     }
 
     @Test
@@ -64,7 +67,7 @@ public class QuarkusVaadinExtensionTest {
                 .filter(bean -> bean.getBeanClass() == TestUiScopedClass.class).findFirst()
                 .get();
 
-        Assertions.assertNotNull(testUiScopedBean);
+        assertNotNull(testUiScopedBean);
     }
 
     // TestClass
