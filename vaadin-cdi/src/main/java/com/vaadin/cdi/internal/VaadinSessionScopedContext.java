@@ -24,7 +24,7 @@ import javax.enterprise.context.spi.Contextual;
 
 import com.vaadin.cdi.VaadinSessionScoped;
 import com.vaadin.server.VaadinSession;
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.deltaspike.core.util.context.AbstractContext;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
