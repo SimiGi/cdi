@@ -18,6 +18,9 @@ import io.quarkus.arc.impl.LazyValue;
 import org.apache.deltaspike.core.util.context.ContextualInstanceInfo;
 import org.apache.deltaspike.core.util.context.ContextualStorage;
 
+/**
+ * Uses implementation from org.apache.deltaspike.core.util.context.AbstractContext in order to implement InjectableContext of quarkus.
+ */
 public abstract class AbstractVaadinContext implements InjectableContext {
 
     private final LazyValue<BeanManager> beanManagerLazyValue = new LazyValue<>(() -> new BeanManagerProvider<>().get(null));
