@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.vaadin</groupId>
         <artifactId>vaadin-cdi-main</artifactId>
-        <version>3.0.2-SNAPSHOT</version>
+        <version>3.0.2-quarkus</version>
     </parent>
 
     <!-- Do not remove explicit groupId even though Maven says this is redundant -->
     <groupId>com.vaadin</groupId>
     <artifactId>vaadin-cdi</artifactId>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.2-quarkus</version>
     <packaging>jar</packaging>
 
     <properties>

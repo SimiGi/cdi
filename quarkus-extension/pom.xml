@@ -5,7 +5,7 @@
     <parent>
         <artifactId>vaadin-cdi-main</artifactId>
         <groupId>com.vaadin</groupId>
-        <version>3.0.2-SNAPSHOT</version>
+        <version>3.0.2-quarkus</version>
     </parent>
     <packaging>pom</packaging>
     <modelVersion>4.0.0</modelVersion>
