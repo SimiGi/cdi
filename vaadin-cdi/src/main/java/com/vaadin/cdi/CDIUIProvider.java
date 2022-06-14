@@ -33,7 +33,7 @@ import javax.inject.Inject;
 import com.vaadin.cdi.internal.AnnotationUtil;
 import com.vaadin.cdi.internal.Conventions;
 import com.vaadin.cdi.internal.UIContextualStorageManager;
-import com.vaadin.cdi.internal.VaadinSessionScopedContext;
+import com.vaadin.cdi.internal.VaadinContextUtils;
 import com.vaadin.navigator.PushStateNavigation;
 import com.vaadin.server.ClientConnector.DetachEvent;
 import com.vaadin.server.ClientConnector.DetachListener;
@@ -41,6 +41,7 @@ import com.vaadin.server.DefaultUIProvider;
 import com.vaadin.server.UIClassSelectionEvent;
 import com.vaadin.server.UICreateEvent;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ApplicationConstants;
 import com.vaadin.ui.UI;
 
@@ -55,6 +56,9 @@ public class CDIUIProvider extends DefaultUIProvider {
     @Inject
     private BeanManager beanManager;
 
+    @Inject
+    VaadinContextUtils vaadinContextUtils;
+
     private final DetachListener detachListener = new DetachListenerImpl();
 
     private static final Annotation QUALIFIER_ANY = new AnnotationLiteral<Any>() {
@@ -67,7 +71,7 @@ public class CDIUIProvider extends DefaultUIProvider {
             Object source = event.getSource();
             if (source instanceof UI) {
                 int uiId = ((UI) source).getUIId();
-                if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
+                if (guessContextIsUndeployed()) {
                     // Happens on tomcat when it expires sessions upon undeploy.
                     // We would get ContextNotActiveException on
                     // uiContextualStorageManager.destroy
@@ -187,6 +191,13 @@ public class CDIUIProvider extends DefaultUIProvider {
                     String path = Conventions.deriveMappingForUI(beanClass);
                     return removeWildcard(path).length();
                 }).reversed()).findFirst().orElse(null);
+    }
+
+    private boolean guessContextIsUndeployed() {
+        // Given there is a current VaadinSession, we should have an active context,
+        // except we get here after the application is undeployed.
+        return (VaadinSession.getCurrent() != null
+                && !vaadinContextUtils.isContextActive(VaadinSessionScoped.class));
     }
 
     private boolean isMatchingPath(String mapping,

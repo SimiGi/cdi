@@ -15,12 +15,27 @@
  */
 package com.vaadin.cdi.server;
 
-import com.vaadin.cdi.CDIUIProvider;
-import com.vaadin.cdi.internal.VaadinSessionScopedContext;
-import com.vaadin.server.*;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-
+import java.util.Set;
 import java.util.logging.Logger;
+
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+import javax.enterprise.inject.spi.BeanManager;
+import javax.enterprise.inject.spi.CDI;
+
+import com.vaadin.cdi.CDIUIProvider;
+import com.vaadin.cdi.VaadinSessionScoped;
+import com.vaadin.cdi.internal.VaadinContextUtils;
+import com.vaadin.server.DeploymentConfiguration;
+import com.vaadin.server.ServiceException;
+import com.vaadin.server.SessionDestroyEvent;
+import com.vaadin.server.SessionDestroyListener;
+import com.vaadin.server.SessionInitEvent;
+import com.vaadin.server.SessionInitListener;
+import com.vaadin.server.VaadinServlet;
+import com.vaadin.server.VaadinServletService;
+import com.vaadin.server.VaadinSession;
+import io.quarkus.arc.impl.BeanManagerProvider;
 
 /**
  * Servlet service implementation for Vaadin CDI.
@@ -33,6 +48,10 @@ public class VaadinCDIServletService extends VaadinServletService {
 
     private final CDIUIProvider cdiuiProvider;
 
+    BeanManager beanManager;
+
+    VaadinContextUtils vaadinContextUtils = CDI.current().select(VaadinContextUtils.class).get();
+
     protected final class SessionListenerImpl implements SessionInitListener,
             SessionDestroyListener {
         @Override
@@ -43,7 +62,7 @@ public class VaadinCDIServletService extends VaadinServletService {
 
         @Override
         public void sessionDestroy(SessionDestroyEvent event) {
-            if (VaadinSessionScopedContext.guessContextIsUndeployed()) {
+            if (guessContextIsUndeployed()) {
                 // Happens on tomcat when it expires sessions upon undeploy.
                 // beanManager.getPassivationCapableBean returns null for passivation id,
                 // so we would get an NPE from AbstractContext.destroyAllActive
@@ -53,7 +72,7 @@ public class VaadinCDIServletService extends VaadinServletService {
                 return;
             }
             getLogger().fine("VaadinSessionScopedContext destroy");
-            VaadinSessionScopedContext.destroy(event.getSession());
+            vaadinContextUtils.destroySessionScopedContext(event.getSession());
         }
 
     }
@@ -63,10 +82,22 @@ public class VaadinCDIServletService extends VaadinServletService {
             throws ServiceException {
         super(servlet, deploymentConfiguration);
 
-        cdiuiProvider = BeanProvider.getContextualReference(CDIUIProvider.class, false);
+        beanManager = new BeanManagerProvider<>().get(null);
+        Set<Bean<?>> beans = beanManager.getBeans(CDIUIProvider.class);
+        Bean<?> bean = beanManager.resolve(beans);
+        CreationalContext<?> creationalContext = beanManager.createCreationalContext(bean);
+
+        cdiuiProvider = (CDIUIProvider) beanManager.getReference(bean, CDIUIProvider.class, creationalContext);
         SessionListenerImpl sessionListener = new SessionListenerImpl();
         addSessionInitListener(sessionListener);
         addSessionDestroyListener(sessionListener);
+    }
+
+    private boolean guessContextIsUndeployed() {
+        // Given there is a current VaadinSession, we should have an active context,
+        // except we get here after the application is undeployed.
+        return (VaadinSession.getCurrent() != null
+                && !vaadinContextUtils.isContextActive(VaadinSessionScoped.class));
     }
 
     private static Logger getLogger() {

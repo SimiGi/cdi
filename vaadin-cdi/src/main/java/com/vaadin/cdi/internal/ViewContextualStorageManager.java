@@ -17,19 +17,20 @@
 
 package com.vaadin.cdi.internal;
 
-import com.vaadin.cdi.NormalUIScoped;
-import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
-import com.vaadin.navigator.View;
-import com.vaadin.navigator.ViewChangeListener;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
+import java.io.Serializable;
 
 import javax.annotation.PreDestroy;
+import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
-import java.io.Serializable;
+
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewChangeListener;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 /**
  * Manage and store ContextualStorage for view context.
@@ -41,7 +42,7 @@ import java.io.Serializable;
  * Concurrency handling ignored intentionally.
  * Locking of VaadinSession is the responsibility of Vaadin Framework.
  */
-@NormalUIScoped
+@UIScoped
 public class ViewContextualStorageManager implements Serializable {
     private final static Storage CLOSED = new ClosedStorage();
     private Storage openingContext = CLOSED;
@@ -68,7 +69,8 @@ public class ViewContextualStorageManager implements Serializable {
             openingContext = new Storage(strategy);
             currentContext = openingContext;
         }
-        final View view = (View) BeanProvider.getContextualReference(beanClass, viewBean);
+        CreationalContext<?> creationalContext = beanManager.createCreationalContext(viewBean);
+        final View view = (View) beanManager.getReference(viewBean, beanClass, creationalContext);
         currentContext = temp;
         return view;
     }

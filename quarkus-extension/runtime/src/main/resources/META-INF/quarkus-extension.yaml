@@ -1,0 +1,9 @@
+name: Quarkus Vaadin Extension
+description: Make Vaadin-cdi (3.0.1-Custom) work with Quarkus.
+metadata:
+#  keywords:
+#    - quarkus-vaadin-extension
+#  guide: ...
+#  categories:
+#    - "miscellaneous"
+#  status: "preview"

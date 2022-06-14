@@ -15,35 +15,43 @@
  */
 package com.vaadin.cdi.internal;
 
-import com.vaadin.cdi.UIScoped;
-import com.vaadin.server.VaadinSession;
-import org.apache.deltaspike.core.api.provider.BeanProvider;
-import org.apache.deltaspike.core.util.context.AbstractContext;
-import org.apache.deltaspike.core.util.context.ContextualStorage;
+import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import javax.enterprise.context.spi.Contextual;
-import javax.enterprise.inject.spi.BeanManager;
-import java.lang.annotation.Annotation;
+import javax.enterprise.context.spi.CreationalContext;
+import javax.enterprise.inject.spi.Bean;
+
+import com.vaadin.cdi.UIScoped;
+import com.vaadin.server.VaadinSession;
+import org.apache.deltaspike.core.util.context.AbstractContext;
+import org.apache.deltaspike.core.util.context.ContextualStorage;
 
 /**
  * UIScopedContext is the context for @UIScoped beans.
  */
-public class UIScopedContext extends AbstractContext {
+public class UIScopedContext extends AbstractVaadinContext {
 
     private UIContextualStorageManager contextualStorageManager;
 
-    public UIScopedContext(final BeanManager beanManager) {
-        super(beanManager);
+    public UIScopedContext() {
+    }
+
+    public UIContextualStorageManager getUIContextualStorageManager() {
+        if(contextualStorageManager == null) {
+
+        Set<Bean<?>> beans = getBeans();
+        Bean<?> bean = getBeanManager().resolve(beans);
+        CreationalContext<?> creationalContext = getBeanManager().createCreationalContext(bean);
+
+        contextualStorageManager = (UIContextualStorageManager) getBeanManager().getReference(bean, UIContextualStorageManager.class, creationalContext);
+        }
+        return contextualStorageManager;
     }
 
     @Override
     protected ContextualStorage getContextualStorage(Contextual<?> contextual, boolean createIfNotExist) {
-        return contextualStorageManager.getContextualStorage(createIfNotExist);
-    }
-
-    public void init(BeanManager beanManager) {
-        contextualStorageManager = BeanProvider
-                .getContextualReference(beanManager, UIContextualStorageManager.class, false);
+        return getUIContextualStorageManager().getContextualStorage(createIfNotExist);
     }
 
     @Override
@@ -54,8 +62,20 @@ public class UIScopedContext extends AbstractContext {
     @Override
     public boolean isActive() {
         return VaadinSession.getCurrent() != null
-                && contextualStorageManager != null
-                && contextualStorageManager.isActive();
+                && getUIContextualStorageManager() != null
+                && getUIContextualStorageManager().isActive();
     }
 
+    @Override
+    protected Class<?> getBeanType() {
+        return UIContextualStorageManager.class;
+    }
+
+    @Override
+    public void destroy() {
+        ContextualStorage storage = getUIContextualStorageManager().getContextualStorage(false);
+        if (storage != null) {
+            AbstractContext.destroyAllActive(storage);
+        }
+    }
 }

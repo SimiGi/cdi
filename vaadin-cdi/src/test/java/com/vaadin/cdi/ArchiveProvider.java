@@ -16,20 +16,38 @@
 
 package com.vaadin.cdi;
 
+import javax.enterprise.inject.spi.Extension;
+
 import com.vaadin.cdi.access.AccessControl;
 import com.vaadin.cdi.access.JaasAccessControl;
-import com.vaadin.cdi.internal.*;
+import com.vaadin.cdi.internal.AnnotationUtil;
+import com.vaadin.cdi.internal.ContextDeployer;
+import com.vaadin.cdi.internal.ContextWrapper;
+import com.vaadin.cdi.internal.Conventions;
+import com.vaadin.cdi.internal.Counter;
+import com.vaadin.cdi.internal.CounterFilter;
+import com.vaadin.cdi.internal.InconsistentDeploymentException;
+import com.vaadin.cdi.internal.UIContextualStorageManager;
+import com.vaadin.cdi.internal.UIScopedContext;
+import com.vaadin.cdi.internal.VaadinContextualStorage;
+import com.vaadin.cdi.internal.VaadinSessionScopedContext;
+import com.vaadin.cdi.internal.ViewContextStrategies;
+import com.vaadin.cdi.internal.ViewContextStrategyProvider;
+import com.vaadin.cdi.internal.ViewContextualStorageManager;
+import com.vaadin.cdi.internal.ViewScopedContext;
 import com.vaadin.cdi.server.VaadinCDIServlet;
 import com.vaadin.cdi.server.VaadinCDIServletService;
-import com.vaadin.cdi.viewcontextstrategy.*;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByName;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNameAndParameters;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextByNavigation;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategy;
+import com.vaadin.cdi.viewcontextstrategy.ViewContextStrategyQualifier;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.Maven;
 import org.jboss.shrinkwrap.resolver.api.maven.PomEquippedResolveStage;
-
-import javax.enterprise.inject.spi.Extension;
 
 /**
  */
@@ -49,7 +67,7 @@ public class ArchiveProvider {
             CDIUIProvider.DetachListenerImpl.class,
             Conventions.class,
             InconsistentDeploymentException.class, AnnotationUtil.class,
-            VaadinExtension.class, VaadinContextualStorage.class, ContextWrapper.class,
+            VaadinContextualStorage.class, ContextWrapper.class,
             URLMapping.class,
             UIScoped.class, ViewScoped.class, NormalUIScoped.class, NormalViewScoped.class,
             VaadinSessionScoped.class, VaadinSessionScopedContext.class,
@@ -86,7 +104,7 @@ public class ArchiveProvider {
                         pom.resolve(
                                 "org.apache.deltaspike.core:deltaspike-core-impl")
                                 .withTransitivity().asFile())
-                .addAsServiceProvider(Extension.class, VaadinExtension.class);
+                .addAsServiceProvider(Extension.class);
         if (emptyBeansXml) {
             archive = archive.addAsWebInfResource(EmptyAsset.INSTANCE,
                     ArchivePaths.create("beans.xml"));
